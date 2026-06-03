@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import type { Coordinator, CoordinatorUpdateData, NoticeFormData, ChangePasswordData } from '../types';
+import type { Coordinator, CoordinatorUpdateData, NoticeFormData, ChangePasswordData, Notice } from '../types';
 
 export const adminKeys = {
   coordinators: ['coordinators'] as const,
+  notices: ['notices'] as const,
 };
 
 export const fetchCoordinators = async (): Promise<Coordinator[]> => {
@@ -33,9 +34,22 @@ export const useDeleteAdmin = () => {
   });
 };
 
+export const fetchNotices = async (): Promise<Notice[]> => {
+  return apiClient.get('/Fetch_Notices');
+};
+
+export const useNotices = () => {
+  return useQuery({
+    queryKey: adminKeys.notices,
+    queryFn: fetchNotices,
+  });
+};
+
 export const useCreateNotice = () => {
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: NoticeFormData) => apiClient.post('/noticecreate', data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.notices }),
   });
 };
 

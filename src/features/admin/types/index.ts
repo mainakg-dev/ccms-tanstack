@@ -41,3 +41,10 @@ export const changePasswordSchema = z.object({
 });
 
 export type ChangePasswordData = z.infer<typeof changePasswordSchema>;
+
+export interface Notice {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+}
