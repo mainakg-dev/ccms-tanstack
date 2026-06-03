@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ClipboardList, Search, Loader2, FileCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -24,7 +24,7 @@ function CenterExamForms() {
   const examFillup = useExamFormFillup();
 
   const form = useForm<ExamFormFillupData>({
-    resolver: standardSchemaResolver(examFormFillupSchema),
+    resolver: zodResolver(examFormFillupSchema),
     defaultValues: { enrollmentNo: '', atiCode: '', examCenterCode: '', lastPaymentReceiptNo: '' },
   });
 

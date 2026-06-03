@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   BookOpen,
   Plus,
@@ -47,12 +47,12 @@ function AdminCourses() {
   const addSubject = useAddSubject();
 
   const courseForm = useForm<CourseFormData>({
-    resolver: standardSchemaResolver(courseSchema),
+    resolver: zodResolver(courseSchema),
     defaultValues: { courseName: '', duration: '', courseCode: '' },
   });
 
   const subjectForm = useForm<AddSubjectData>({
-    resolver: standardSchemaResolver(addSubjectSchema),
+    resolver: zodResolver(addSubjectSchema),
     defaultValues: { courseId: '', subjectName: '', theoryFullMarks: 0, practicalFullMarks: 0 },
   });
 

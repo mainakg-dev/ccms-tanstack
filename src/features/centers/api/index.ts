@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import type { Center, Enquiry, AmountEditData } from '../types';
+import type { Center, Enquiry, AmountEditData, SubmitEnquiryData } from '../types';
 
 export const centerKeys = {
   all: ['centers'] as const,
@@ -58,5 +58,13 @@ export const useEditAmount = () => {
   return useMutation({
     mutationFn: (data: AmountEditData) => apiClient.post('/amountEdit', data),
     onSuccess: () => qc.invalidateQueries({ queryKey: centerKeys.all }),
+  });
+};
+
+export const useSubmitEnquiry = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: SubmitEnquiryData) => apiClient.post('/submit_enquiry', data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: enquiryKeys.all }),
   });
 };

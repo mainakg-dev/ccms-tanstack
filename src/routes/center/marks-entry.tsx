@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { FileText, Search, Loader2, Calculator, Award } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -27,7 +27,7 @@ function CenterMarksEntry() {
   const marksEntry = useMarksEntry();
 
   const form = useForm<MarksEntryData>({
-    resolver: standardSchemaResolver(marksEntrySchema),
+    resolver: zodResolver(marksEntrySchema),
     defaultValues: {
       enrollmentNo: '', passingYear: '', dateOfPublishing: '', remark: 'PASS', subjects: [],
     },

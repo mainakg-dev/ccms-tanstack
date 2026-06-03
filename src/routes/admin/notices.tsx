@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Bell, Loader2, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/admin/notices')({
 function AdminNotices() {
   const createNotice = useCreateNotice();
   const form = useForm<NoticeFormData>({
-    resolver: standardSchemaResolver(noticeSchema),
+    resolver: zodResolver(noticeSchema),
     defaultValues: { title: '', content: '' },
   });
 

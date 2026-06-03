@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as EnquiryRouteImport } from './routes/enquiry'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CenterRouteRouteImport } from './routes/center/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
@@ -33,6 +34,11 @@ import { Route as AdminCentersRouteImport } from './routes/admin/centers'
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnquiryRoute = EnquiryRouteImport.update({
+  id: '/enquiry',
+  path: '/enquiry',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/center': typeof CenterRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/enquiry': typeof EnquiryRoute
   '/login': typeof LoginRoute
   '/admin/centers': typeof AdminCentersRoute
   '/admin/coordinators': typeof AdminCoordinatorsRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/enquiry': typeof EnquiryRoute
   '/login': typeof LoginRoute
   '/admin/centers': typeof AdminCentersRoute
   '/admin/coordinators': typeof AdminCoordinatorsRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/center': typeof CenterRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/enquiry': typeof EnquiryRoute
   '/login': typeof LoginRoute
   '/admin/centers': typeof AdminCentersRoute
   '/admin/coordinators': typeof AdminCoordinatorsRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/center'
     | '/about'
+    | '/enquiry'
     | '/login'
     | '/admin/centers'
     | '/admin/coordinators'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/enquiry'
     | '/login'
     | '/admin/centers'
     | '/admin/coordinators'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/center'
     | '/about'
+    | '/enquiry'
     | '/login'
     | '/admin/centers'
     | '/admin/coordinators'
@@ -268,6 +280,7 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   CenterRouteRoute: typeof CenterRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  EnquiryRoute: typeof EnquiryRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -278,6 +291,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/enquiry': {
+      id: '/enquiry'
+      path: '/enquiry'
+      fullPath: '/enquiry'
+      preLoaderRoute: typeof EnquiryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -471,6 +491,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   CenterRouteRoute: CenterRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  EnquiryRoute: EnquiryRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

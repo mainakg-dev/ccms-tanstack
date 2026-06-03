@@ -93,4 +93,25 @@ export const centerHandlers = [
       data: body,
     });
   }),
+
+  // POST /submit_enquiry
+  http.post(`${BASE_URL}/submit_enquiry`, async ({ request }) => {
+    await delay(500);
+    const body = (await request.json()) as { name: string; email: string; mobile: string; address: string; message: string };
+    const newEnquiry = {
+      id: `enq_${Date.now()}`,
+      name: body.name,
+      email: body.email,
+      mobile: body.mobile,
+      address: body.address,
+      message: body.message,
+      status: 'PENDING' as const,
+      createdAt: new Date().toISOString(),
+    };
+    enquiries = [newEnquiry, ...enquiries];
+    return HttpResponse.json({
+      message: 'Enquiry submitted successfully',
+      enquiry: newEnquiry,
+    });
+  }),
 ];

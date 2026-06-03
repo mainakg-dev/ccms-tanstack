@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Settings, Loader2, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -17,7 +17,7 @@ export const Route = createFileRoute('/admin/settings')({
 function AdminSettings() {
   const changePassword = useChangePassword();
   const form = useForm<ChangePasswordData>({
-    resolver: standardSchemaResolver(changePasswordSchema),
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   });
 

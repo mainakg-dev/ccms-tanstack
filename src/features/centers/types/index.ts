@@ -35,3 +35,13 @@ export const generateFranchiseSchema = z.object({
 });
 
 export type GenerateFranchiseData = z.infer<typeof generateFranchiseSchema>;
+
+export const submitEnquirySchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  mobile: z.string().regex(/^\d{10}$/, 'Mobile number must be exactly 10 digits'),
+  address: z.string().min(10, 'Address must be at least 10 characters'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+export type SubmitEnquiryData = z.infer<typeof submitEnquirySchema>;
