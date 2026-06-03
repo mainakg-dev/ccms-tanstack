@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "vite dev --port 3000",
-    "dev:mock": "dotenv -e src/env/.env.mock -- vite dev --port 3000",
+    "dev:mock": "vite dev --port 3000 --mode mock",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run"
@@ -24,7 +24,6 @@
     "axios": "^1.16.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "dotenv-cli": "^11.0.0",
     "lucide-react": "^0.577.0",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
@@ -53,12 +52,6 @@
     "typescript": "^6.0.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.6"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss"
-    ]
   },
   "msw": {
     "workerDirectory": [

@@ -29,7 +29,7 @@ export interface Course {
 }
 
 export const addSubjectSchema = z.object({
-  courseId: z.string().uuid('Valid Course ID is required'),
+  courseId: z.string().min(1, 'Valid Course ID is required'),
   subjectName: z.string().min(2, 'Subject name is required'),
   theoryFullMarks: z.number().min(0, 'Must be >= 0'),
   practicalFullMarks: z.number().min(0, 'Must be >= 0'),
