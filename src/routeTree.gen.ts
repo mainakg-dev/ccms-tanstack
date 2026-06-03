@@ -16,7 +16,6 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CenterIndexRouteImport } from './routes/center/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as CenterStudentsRouteImport } from './routes/center/students'
 import { Route as CenterSettingsRouteImport } from './routes/center/settings'
 import { Route as CenterMarksEntryRouteImport } from './routes/center/marks-entry'
@@ -30,7 +29,6 @@ import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
 import { Route as AdminCoursesRouteImport } from './routes/admin/courses'
 import { Route as AdminCoordinatorsRouteImport } from './routes/admin/coordinators'
 import { Route as AdminCentersRouteImport } from './routes/admin/centers'
-import { Route as DemoSentryTestingRouteImport } from './routes/demo/sentry.testing'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -66,11 +64,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
-} as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const CenterStudentsRoute = CenterStudentsRouteImport.update({
   id: '/students',
@@ -137,11 +130,6 @@ const AdminCentersRoute = AdminCentersRouteImport.update({
   path: '/centers',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const DemoSentryTestingRoute = DemoSentryTestingRouteImport.update({
-  id: '/demo/sentry/testing',
-  path: '/demo/sentry/testing',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,10 +150,8 @@ export interface FileRoutesByFullPath {
   '/center/marks-entry': typeof CenterMarksEntryRoute
   '/center/settings': typeof CenterSettingsRoute
   '/center/students': typeof CenterStudentsRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/': typeof AdminIndexRoute
   '/center/': typeof CenterIndexRoute
-  '/demo/sentry/testing': typeof DemoSentryTestingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -184,10 +170,8 @@ export interface FileRoutesByTo {
   '/center/marks-entry': typeof CenterMarksEntryRoute
   '/center/settings': typeof CenterSettingsRoute
   '/center/students': typeof CenterStudentsRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin': typeof AdminIndexRoute
   '/center': typeof CenterIndexRoute
-  '/demo/sentry/testing': typeof DemoSentryTestingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -209,10 +193,8 @@ export interface FileRoutesById {
   '/center/marks-entry': typeof CenterMarksEntryRoute
   '/center/settings': typeof CenterSettingsRoute
   '/center/students': typeof CenterStudentsRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/': typeof AdminIndexRoute
   '/center/': typeof CenterIndexRoute
-  '/demo/sentry/testing': typeof DemoSentryTestingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -235,10 +217,8 @@ export interface FileRouteTypes {
     | '/center/marks-entry'
     | '/center/settings'
     | '/center/students'
-    | '/demo/tanstack-query'
     | '/admin/'
     | '/center/'
-    | '/demo/sentry/testing'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -257,10 +237,8 @@ export interface FileRouteTypes {
     | '/center/marks-entry'
     | '/center/settings'
     | '/center/students'
-    | '/demo/tanstack-query'
     | '/admin'
     | '/center'
-    | '/demo/sentry/testing'
   id:
     | '__root__'
     | '/'
@@ -281,10 +259,8 @@ export interface FileRouteTypes {
     | '/center/marks-entry'
     | '/center/settings'
     | '/center/students'
-    | '/demo/tanstack-query'
     | '/admin/'
     | '/center/'
-    | '/demo/sentry/testing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -293,8 +269,6 @@ export interface RootRouteChildren {
   CenterRouteRoute: typeof CenterRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
-  DemoSentryTestingRoute: typeof DemoSentryTestingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -347,13 +321,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
-    }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/center/students': {
       id: '/center/students'
@@ -446,13 +413,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCentersRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/demo/sentry/testing': {
-      id: '/demo/sentry/testing'
-      path: '/demo/sentry/testing'
-      fullPath: '/demo/sentry/testing'
-      preLoaderRoute: typeof DemoSentryTestingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -512,18 +472,7 @@ const rootRouteChildren: RootRouteChildren = {
   CenterRouteRoute: CenterRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
-  DemoSentryTestingRoute: DemoSentryTestingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
