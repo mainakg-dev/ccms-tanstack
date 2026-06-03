@@ -20,7 +20,6 @@ import { useSubmitEnquiry } from '../features/centers/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
 
 export const Route = createFileRoute('/enquiry')({
   component: FranchiseEnquiryPage,
@@ -32,11 +31,16 @@ const STEPS = [
   { id: 3, title: 'Enquiry Details', description: 'Your business proposal' },
 ];
 
-function FranchiseEnquiryPage() {
+export function FranchiseEnquiryPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const submitEnquiry = useSubmitEnquiry();
 
-  const form = useForm<SubmitEnquiryData>({
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    formState: { errors },
+  } = useForm<SubmitEnquiryData>({
     resolver: zodResolver(submitEnquirySchema),
     defaultValues: {
       name: '',
@@ -51,9 +55,9 @@ function FranchiseEnquiryPage() {
   const nextStep = async () => {
     let isValid = false;
     if (currentStep === 1) {
-      isValid = await form.trigger(['name', 'email', 'mobile']);
+      isValid = await trigger(['name', 'email', 'mobile']);
     } else if (currentStep === 2) {
-      isValid = await form.trigger(['address']);
+      isValid = await trigger(['address']);
     }
 
     if (isValid) {
@@ -145,163 +149,143 @@ function FranchiseEnquiryPage() {
             </span>
           </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* STEP 1: Contact Information */}
-              {currentStep === 1 && (
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[var(--sea-ink)]">Full Name</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--sea-ink-soft)]" />
-                            <Input placeholder="Enter your full name" className="pl-9" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[var(--sea-ink)]">Email Address</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--sea-ink-soft)]" />
-                            <Input type="email" placeholder="you@example.com" className="pl-9" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="mobile"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[var(--sea-ink)]">Mobile Number</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--sea-ink-soft)]" />
-                            <Input placeholder="10-digit mobile number" className="pl-9" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* STEP 1: Contact Information */}
+            {currentStep === 1 && (
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <label htmlFor="name" className="text-sm font-medium leading-none text-[var(--sea-ink)] select-none">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--sea-ink-soft)]" />
+                    <Input id="name" placeholder="Enter your full name" className="pl-9" {...register("name")} />
+                  </div>
+                  {errors.name && (
+                    <p className="text-xs font-medium text-destructive">{errors.name.message}</p>
+                  )}
                 </div>
-              )}
 
-              {/* STEP 2: Proposed Location */}
-              {currentStep === 2 && (
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[var(--sea-ink)]">Proposed Center Address</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <MapPin className="absolute top-3 left-3 h-4 w-4 text-[var(--sea-ink-soft)]" />
-                            <Textarea
-                              placeholder="Enter the full address of the proposed franchise center location"
-                              className="pl-9 min-h-[120px]"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="grid gap-2">
+                  <label htmlFor="email" className="text-sm font-medium leading-none text-[var(--sea-ink)] select-none">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--sea-ink-soft)]" />
+                    <Input id="email" type="email" placeholder="you@example.com" className="pl-9" {...register("email")} />
+                  </div>
+                  {errors.email && (
+                    <p className="text-xs font-medium text-destructive">{errors.email.message}</p>
+                  )}
                 </div>
-              )}
 
-              {/* STEP 3: Enquiry Details */}
-              {currentStep === 3 && (
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[var(--sea-ink)]">Business Proposal / Message</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <MessageSquare className="absolute top-3 left-3 h-4 w-4 text-[var(--sea-ink-soft)]" />
-                            <Textarea
-                              placeholder="Describe your motivation, previous experience, building space, and target student count."
-                              className="pl-9 min-h-[120px]"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="grid gap-2">
+                  <label htmlFor="mobile" className="text-sm font-medium leading-none text-[var(--sea-ink)] select-none">
+                    Mobile Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--sea-ink-soft)]" />
+                    <Input id="mobile" placeholder="10-digit mobile number" className="pl-9" {...register("mobile")} />
+                  </div>
+                  {errors.mobile && (
+                    <p className="text-xs font-medium text-destructive">{errors.mobile.message}</p>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Navigation Controls */}
-              <div className="flex items-center justify-between border-t border-[var(--line)] pt-6">
+            {/* STEP 2: Proposed Location */}
+            {currentStep === 2 && (
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <label htmlFor="address" className="text-sm font-medium leading-none text-[var(--sea-ink)] select-none">
+                    Proposed Center Address
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute top-3 left-3 h-4 w-4 text-[var(--sea-ink-soft)]" />
+                    <Textarea
+                      id="address"
+                      placeholder="Enter the full address of the proposed franchise center location"
+                      className="pl-9 min-h-[120px]"
+                      {...register("address")}
+                    />
+                  </div>
+                  {errors.address && (
+                    <p className="text-xs font-medium text-destructive">{errors.address.message}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: Enquiry Details */}
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <label htmlFor="message" className="text-sm font-medium leading-none text-[var(--sea-ink)] select-none">
+                    Business Proposal / Message
+                  </label>
+                  <div className="relative">
+                    <MessageSquare className="absolute top-3 left-3 h-4 w-4 text-[var(--sea-ink-soft)]" />
+                    <Textarea
+                      id="message"
+                      placeholder="Describe your motivation, previous experience, building space, and target student count."
+                      className="pl-9 min-h-[120px]"
+                      {...register("message")}
+                    />
+                  </div>
+                  {errors.message && (
+                    <p className="text-xs font-medium text-destructive">{errors.message.message}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Controls */}
+            <div className="flex items-center justify-between border-t border-[var(--line)] pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className="gap-2 rounded-full border-[var(--line)] bg-[var(--chip-bg)] text-[var(--sea-ink-soft)] hover:bg-[var(--link-bg-hover)]"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </Button>
+
+              {currentStep < STEPS.length ? (
                 <Button
                   type="button"
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="gap-2 rounded-full border-[var(--line)] bg-[var(--chip-bg)] text-[var(--sea-ink-soft)] hover:bg-[var(--link-bg-hover)]"
+                  onClick={nextStep}
+                  className="gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-6 text-white hover:from-emerald-600 hover:to-teal-700"
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                  Back
+                  Next
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
-
-                {currentStep < STEPS.length ? (
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-6 text-white hover:from-emerald-600 hover:to-teal-700"
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={submitEnquiry.isPending}
-                    className="gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-6 text-white hover:from-emerald-600 hover:to-teal-700"
-                  >
-                    {submitEnquiry.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      'Submit Enquiry'
-                    )}
-                  </Button>
-                )}
-              </div>
-
-              {submitEnquiry.isError && (
-                <p className="text-center text-sm text-destructive mt-4">
-                  Failed to submit enquiry: {submitEnquiry.error.message}
-                </p>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={submitEnquiry.isPending}
+                  className="gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-6 text-white hover:from-emerald-600 hover:to-teal-700"
+                >
+                  {submitEnquiry.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    'Submit Enquiry'
+                  )}
+                </Button>
               )}
-            </form>
-          </Form>
+            </div>
+
+            {submitEnquiry.isError && (
+              <p className="text-center text-sm text-destructive mt-4">
+                Failed to submit enquiry: {submitEnquiry.error.message}
+              </p>
+            )}
+          </form>
         </div>
       </div>
     </main>

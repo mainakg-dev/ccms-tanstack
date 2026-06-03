@@ -1,28 +1,44 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Settings, Loader2, Lock } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
-import { useChangePassword } from '../../features/admin/api/index';
-import { changePasswordSchema } from '../../features/admin/types/index';
-import type { ChangePasswordData } from '../../features/admin/types/index';
+import { Button } from "#/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "#/components/ui/card";
+import { Input } from "#/components/ui/input";
+import { useChangePassword } from "#/features/admin/api";
+import {
+  changePasswordSchema,
+  type ChangePasswordData,
+} from "#/features/admin/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
+import { Loader2, Lock, Settings } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-export const Route = createFileRoute('/center/settings')({
+export const Route = createFileRoute("/center/settings")({
   component: CenterSettings,
 });
 
 function CenterSettings() {
   const changePassword = useChangePassword();
-  const form = useForm<ChangePasswordData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ChangePasswordData>({
     resolver: zodResolver(changePasswordSchema),
-    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
   });
 
   const onSubmit = (data: ChangePasswordData) => {
-    changePassword.mutate(data, { onSuccess: () => form.reset() });
+    changePassword.mutate(data, { onSuccess: () => reset() });
   };
 
   return (
@@ -33,27 +49,77 @@ function CenterSettings() {
       </div>
       <Card className="max-w-lg border-border/40 bg-card/80">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base"><Lock className="h-4 w-4 text-blue-500" />Change Password</CardTitle>
-          <CardDescription>Update your center account password.</CardDescription>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Lock className="h-4 w-4 text-blue-500" />
+            Change Password
+          </CardTitle>
+          <CardDescription>
+            Update your center account password.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField control={form.control} name="currentPassword" render={({ field }) => (
-                <FormItem><FormLabel>Current Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="newPassword" render={({ field }) => (
-                <FormItem><FormLabel>New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="confirmPassword" render={({ field }) => (
-                <FormItem><FormLabel>Confirm Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <Button type="submit" disabled={changePassword.isPending} className="gap-2">
-                {changePassword.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Settings className="h-4 w-4" />}
-                Update Password
-              </Button>
-            </form>
-          </Form>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid gap-2">
+              <label htmlFor="currentPassword" className="text-sm font-medium leading-none select-none">
+                Current Password
+              </label>
+              <Input
+                id="currentPassword"
+                type="password"
+                {...register("currentPassword")}
+              />
+              {errors.currentPassword && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.currentPassword.message}
+                </p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <label htmlFor="newPassword" className="text-sm font-medium leading-none select-none">
+                New Password
+              </label>
+              <Input
+                id="newPassword"
+                type="password"
+                {...register("newPassword")}
+              />
+              {errors.newPassword && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.newPassword.message}
+                </p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium leading-none select-none">
+                Confirm Password
+              </label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                {...register("confirmPassword")}
+              />
+              {errors.confirmPassword && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={changePassword.isPending}
+              className="gap-2"
+            >
+              {changePassword.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Settings className="h-4 w-4" />
+              )}
+              Update Password
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

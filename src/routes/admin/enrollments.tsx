@@ -67,7 +67,7 @@ function getStatusBadge(status: string, activated: boolean) {
   return <Badge variant="outline" className={v.className}>{v.label}</Badge>;
 }
 
-function AdminEnrollments() {
+export function AdminEnrollments() {
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Enrollment | null>(null);
 

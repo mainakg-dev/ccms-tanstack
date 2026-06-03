@@ -21,14 +21,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../../components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../../components/ui/form';
 import { useCourses, useCreateCourse, useAddSubject } from '../../features/courses/api/index';
 import { courseSchema, addSubjectSchema } from '../../features/courses/types/index';
 import type { CourseFormData, AddSubjectData, Course } from '../../features/courses/types/index';
@@ -37,7 +29,7 @@ export const Route = createFileRoute('/admin/courses')({
   component: AdminCourses,
 });
 
-function AdminCourses() {
+export function AdminCourses() {
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [addSubjectCourse, setAddSubjectCourse] = useState<Course | null>(null);
@@ -46,12 +38,23 @@ function AdminCourses() {
   const createCourse = useCreateCourse();
   const addSubject = useAddSubject();
 
-  const courseForm = useForm<CourseFormData>({
+  const {
+    register: registerCourse,
+    handleSubmit: handleSubmitCourse,
+    formState: { errors: courseErrors },
+    reset: resetCourse,
+  } = useForm<CourseFormData>({
     resolver: zodResolver(courseSchema),
     defaultValues: { courseName: '', duration: '', courseCode: '' },
   });
 
-  const subjectForm = useForm<AddSubjectData>({
+  const {
+    register: registerSubject,
+    handleSubmit: handleSubmitSubject,
+    formState: { errors: subjectErrors },
+    reset: resetSubject,
+    setValue: setSubjectValue,
+  } = useForm<AddSubjectData>({
     resolver: zodResolver(addSubjectSchema),
     defaultValues: { courseId: '', subjectName: '', theoryFullMarks: 0, practicalFullMarks: 0 },
   });
@@ -60,7 +63,7 @@ function AdminCourses() {
     createCourse.mutate(data, {
       onSuccess: () => {
         setShowAddCourse(false);
-        courseForm.reset();
+        resetCourse();
       },
     });
   };
@@ -69,7 +72,7 @@ function AdminCourses() {
     addSubject.mutate(data, {
       onSuccess: () => {
         setAddSubjectCourse(null);
-        subjectForm.reset();
+        resetSubject();
       },
     });
   };
@@ -93,25 +96,56 @@ function AdminCourses() {
               <DialogTitle>Create New Course</DialogTitle>
               <DialogDescription>Add a new course to your institute's catalog.</DialogDescription>
             </DialogHeader>
-            <Form {...courseForm}>
-              <form onSubmit={courseForm.handleSubmit(onCreateCourse)} className="space-y-4">
-                <FormField control={courseForm.control} name="courseName" render={({ field }) => (
-                  <FormItem><FormLabel>Course Name</FormLabel><FormControl><Input placeholder="e.g. Diploma in Computer Application" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={courseForm.control} name="duration" render={({ field }) => (
-                  <FormItem><FormLabel>Duration</FormLabel><FormControl><Input placeholder="e.g. 6 months" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={courseForm.control} name="courseCode" render={({ field }) => (
-                  <FormItem><FormLabel>Course Code (Optional)</FormLabel><FormControl><Input placeholder="e.g. DCA-001" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <DialogFooter>
-                  <Button type="submit" disabled={createCourse.isPending}>
-                    {createCourse.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Create Course
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
+            <form onSubmit={handleSubmitCourse(onCreateCourse)} className="space-y-4">
+              <div className="grid gap-2">
+                <label htmlFor="courseName" className="text-sm font-medium leading-none select-none">
+                  Course Name
+                </label>
+                <Input
+                  id="courseName"
+                  placeholder="e.g. Diploma in Computer Application"
+                  {...registerCourse("courseName")}
+                />
+                {courseErrors.courseName && (
+                  <p className="text-xs font-medium text-destructive">{courseErrors.courseName.message}</p>
+                )}
+              </div>
+
+              <div className="grid gap-2">
+                <label htmlFor="duration" className="text-sm font-medium leading-none select-none">
+                  Duration
+                </label>
+                <Input
+                  id="duration"
+                  placeholder="e.g. 6 months"
+                  {...registerCourse("duration")}
+                />
+                {courseErrors.duration && (
+                  <p className="text-xs font-medium text-destructive">{courseErrors.duration.message}</p>
+                )}
+              </div>
+
+              <div className="grid gap-2">
+                <label htmlFor="courseCode" className="text-sm font-medium leading-none select-none">
+                  Course Code (Optional)
+                </label>
+                <Input
+                  id="courseCode"
+                  placeholder="e.g. DCA-001"
+                  {...registerCourse("courseCode")}
+                />
+                {courseErrors.courseCode && (
+                  <p className="text-xs font-medium text-destructive">{courseErrors.courseCode.message}</p>
+                )}
+              </div>
+
+              <DialogFooter>
+                <Button type="submit" disabled={createCourse.isPending}>
+                  {createCourse.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Create Course
+                </Button>
+              </DialogFooter>
+            </form>
           </DialogContent>
         </Dialog>
       </div>
@@ -197,7 +231,7 @@ function AdminCourses() {
                     className="mt-4 gap-2"
                     onClick={() => {
                       setAddSubjectCourse(course);
-                      subjectForm.setValue('courseId', course.id);
+                      setSubjectValue('courseId', course.id);
                     }}
                   >
                     <Plus className="h-3 w-3" />
@@ -217,27 +251,58 @@ function AdminCourses() {
             <DialogTitle>Add Subject to {addSubjectCourse?.courseName}</DialogTitle>
             <DialogDescription>Define a new subject with marks allocation.</DialogDescription>
           </DialogHeader>
-          <Form {...subjectForm}>
-            <form onSubmit={subjectForm.handleSubmit(onAddSubject)} className="space-y-4">
-              <FormField control={subjectForm.control} name="subjectName" render={({ field }) => (
-                <FormItem><FormLabel>Subject Name</FormLabel><FormControl><Input placeholder="e.g. Programming in C" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={subjectForm.control} name="theoryFullMarks" render={({ field }) => (
-                  <FormItem><FormLabel>Theory Full Marks</FormLabel><FormControl><Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={subjectForm.control} name="practicalFullMarks" render={({ field }) => (
-                  <FormItem><FormLabel>Practical Full Marks</FormLabel><FormControl><Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} /></FormControl><FormMessage /></FormItem>
-                )} />
+          <form onSubmit={handleSubmitSubject(onAddSubject)} className="space-y-4">
+            <div className="grid gap-2">
+              <label htmlFor="subjectName" className="text-sm font-medium leading-none select-none">
+                Subject Name
+              </label>
+              <Input
+                id="subjectName"
+                placeholder="e.g. Programming in C"
+                {...registerSubject("subjectName")}
+              />
+              {subjectErrors.subjectName && (
+                <p className="text-xs font-medium text-destructive">{subjectErrors.subjectName.message}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <label htmlFor="theoryFullMarks" className="text-sm font-medium leading-none select-none">
+                  Theory Full Marks
+                </label>
+                <Input
+                  id="theoryFullMarks"
+                  type="number"
+                  {...registerSubject("theoryFullMarks", { valueAsNumber: true })}
+                />
+                {subjectErrors.theoryFullMarks && (
+                  <p className="text-xs font-medium text-destructive">{subjectErrors.theoryFullMarks.message}</p>
+                )}
               </div>
-              <DialogFooter>
-                <Button type="submit" disabled={addSubject.isPending}>
-                  {addSubject.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Add Subject
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
+
+              <div className="grid gap-2">
+                <label htmlFor="practicalFullMarks" className="text-sm font-medium leading-none select-none">
+                  Practical Full Marks
+                </label>
+                <Input
+                  id="practicalFullMarks"
+                  type="number"
+                  {...registerSubject("practicalFullMarks", { valueAsNumber: true })}
+                />
+                {subjectErrors.practicalFullMarks && (
+                  <p className="text-xs font-medium text-destructive">{subjectErrors.practicalFullMarks.message}</p>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="submit" disabled={addSubject.isPending}>
+                {addSubject.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Add Subject
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

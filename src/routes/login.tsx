@@ -3,14 +3,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, GraduationCap, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Button } from "../components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { useLogin } from "../features/auth/api/login";
 import type { LoginCredentials } from "../features/auth/types";
@@ -20,11 +12,15 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-function LoginPage() {
+export function LoginPage() {
   const navigate = useNavigate();
   const loginMutation = useLogin();
 
-  const form = useForm<LoginCredentials>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginCredentials>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
@@ -105,65 +101,62 @@ function LoginPage() {
             </p>
           </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="admin@institute.com"
-                        autoComplete="email"
-                        className="h-11"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="grid gap-2">
+              <label htmlFor="email" className="text-sm font-medium leading-none">
+                Email Address
+              </label>
+              <Input
+                id="email"
+                placeholder="admin@institute.com"
+                autoComplete="email"
+                className="h-11"
+                {...register("email")}
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="current-password"
-                        className="h-11"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {loginMutation.error && (
-                <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-                  {loginMutation.error.message ||
-                    "Invalid credentials. Please try again."}
-                </div>
+              {errors.email && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.email.message}
+                </p>
               )}
+            </div>
 
-              <Button
-                type="submit"
-                className="h-11 w-full gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20 hover:from-emerald-600 hover:to-teal-700"
-                disabled={loginMutation.isPending}
-              >
-                {loginMutation.isPending && (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                )}
-                {loginMutation.isPending ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
-          </Form>
+            <div className="grid gap-2">
+              <label htmlFor="password" className="text-sm font-medium leading-none">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+                className="h-11"
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {loginMutation.error && (
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                {loginMutation.error.message ||
+                  "Invalid credentials. Please try again."}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="h-11 w-full gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20 hover:from-emerald-600 hover:to-teal-700"
+              disabled={loginMutation.isPending}
+            >
+              {loginMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              )}
+              {loginMutation.isPending ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
 
           <p className="mt-8 text-center text-xs text-muted-foreground">
             Secured with role-based access control. Contact your administrator

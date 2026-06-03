@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../..
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
 import { useCreateNotice } from '../../features/admin/api/index';
 import { noticeSchema } from '../../features/admin/types/index';
 import type { NoticeFormData } from '../../features/admin/types/index';
@@ -15,16 +14,21 @@ export const Route = createFileRoute('/admin/notices')({
   component: AdminNotices,
 });
 
-function AdminNotices() {
+export function AdminNotices() {
   const createNotice = useCreateNotice();
-  const form = useForm<NoticeFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<NoticeFormData>({
     resolver: zodResolver(noticeSchema),
     defaultValues: { title: '', content: '' },
   });
 
   const onSubmit = (data: NoticeFormData) => {
     createNotice.mutate(data, {
-      onSuccess: () => form.reset(),
+      onSuccess: () => reset(),
     });
   };
 
@@ -44,23 +48,48 @@ function AdminNotices() {
           <CardDescription>Publish a notice visible to all centers and students.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="Notice title" {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="content" render={({ field }) => (
-                <FormItem><FormLabel>Content</FormLabel><FormControl><Textarea placeholder="Write notice content here..." rows={6} {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <Button type="submit" disabled={createNotice.isPending} className="gap-2">
-                {createNotice.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Publish Notice
-              </Button>
-              {createNotice.isSuccess && (
-                <p className="text-sm text-emerald-600">Notice published successfully!</p>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid gap-2">
+              <label htmlFor="title" className="text-sm font-medium leading-none select-none">
+                Title
+              </label>
+              <Input
+                id="title"
+                placeholder="Notice title"
+                {...register("title")}
+              />
+              {errors.title && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.title.message}
+                </p>
               )}
-            </form>
-          </Form>
+            </div>
+
+            <div className="grid gap-2">
+              <label htmlFor="content" className="text-sm font-medium leading-none select-none">
+                Content
+              </label>
+              <Textarea
+                id="content"
+                placeholder="Write notice content here..."
+                rows={6}
+                {...register("content")}
+              />
+              {errors.content && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.content.message}
+                </p>
+              )}
+            </div>
+
+            <Button type="submit" disabled={createNotice.isPending} className="gap-2">
+              {createNotice.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Publish Notice
+            </Button>
+            {createNotice.isSuccess && (
+              <p className="text-sm text-emerald-600">Notice published successfully!</p>
+            )}
+          </form>
         </CardContent>
       </Card>
     </div>

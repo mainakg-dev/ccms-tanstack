@@ -6,7 +6,6 @@ import { ClipboardList, Search, Loader2, FileCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../components/ui/form';
 import { examFormFillupSchema } from '../../features/exams/types/index';
 import type { ExamFormFillupData, ExamFormStudent } from '../../features/exams/types/index';
 import { fetchStudentForExam, useExamFormFillup } from '../../features/exams/api/index';
@@ -23,7 +22,13 @@ function CenterExamForms() {
 
   const examFillup = useExamFormFillup();
 
-  const form = useForm<ExamFormFillupData>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<ExamFormFillupData>({
     resolver: zodResolver(examFormFillupSchema),
     defaultValues: { enrollmentNo: '', atiCode: '', examCenterCode: '', lastPaymentReceiptNo: '' },
   });
@@ -39,7 +44,7 @@ function CenterExamForms() {
         setStudent(null);
       } else {
         setStudent(result);
-        form.setValue('enrollmentNo', enrollmentNo);
+        setValue('enrollmentNo', enrollmentNo);
       }
     } catch {
       setLookupError('Student not found. Please verify the enrollment number.');
@@ -52,7 +57,7 @@ function CenterExamForms() {
   const onSubmit = (data: ExamFormFillupData) => {
     examFillup.mutate(data, {
       onSuccess: () => {
-        form.reset();
+        reset();
         setStudent(null);
         setEnrollmentNo('');
       },
@@ -113,26 +118,45 @@ function CenterExamForms() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  <FormField control={form.control} name="atiCode" render={({ field }) => (
-                    <FormItem><FormLabel>ATI Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField control={form.control} name="examCenterCode" render={({ field }) => (
-                    <FormItem><FormLabel>Exam Center Code</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField control={form.control} name="lastPaymentReceiptNo" render={({ field }) => (
-                    <FormItem><FormLabel>Last Payment Receipt No</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="grid gap-2">
+                  <label htmlFor="atiCode" className="text-sm font-medium leading-none select-none">
+                    ATI Code
+                  </label>
+                  <Input id="atiCode" {...register("atiCode")} />
+                  {errors.atiCode && (
+                    <p className="text-xs font-medium text-destructive">{errors.atiCode.message}</p>
+                  )}
                 </div>
-                <Button type="submit" disabled={examFillup.isPending} className="gap-2">
-                  {examFillup.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCheck className="h-4 w-4" />}
-                  Submit Exam Form
-                </Button>
-                {examFillup.isSuccess && <p className="text-sm text-emerald-600">Exam form submitted successfully!</p>}
-              </form>
-            </Form>
+
+                <div className="grid gap-2">
+                  <label htmlFor="examCenterCode" className="text-sm font-medium leading-none select-none">
+                    Exam Center Code
+                  </label>
+                  <Input id="examCenterCode" {...register("examCenterCode")} />
+                  {errors.examCenterCode && (
+                    <p className="text-xs font-medium text-destructive">{errors.examCenterCode.message}</p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
+                  <label htmlFor="lastPaymentReceiptNo" className="text-sm font-medium leading-none select-none">
+                    Last Payment Receipt No
+                  </label>
+                  <Input id="lastPaymentReceiptNo" {...register("lastPaymentReceiptNo")} />
+                  {errors.lastPaymentReceiptNo && (
+                    <p className="text-xs font-medium text-destructive">{errors.lastPaymentReceiptNo.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <Button type="submit" disabled={examFillup.isPending} className="gap-2">
+                {examFillup.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCheck className="h-4 w-4" />}
+                Submit Exam Form
+              </Button>
+              {examFillup.isSuccess && <p className="text-sm text-emerald-600">Exam form submitted successfully!</p>}
+            </form>
           </CardContent>
         </Card>
       )}
