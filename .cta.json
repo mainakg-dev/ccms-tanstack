@@ -3,7 +3,7 @@
   "mode": "file-router",
   "typescript": true,
   "tailwind": true,
-  "packageManager": "npm",
+  "packageManager": "bun",
   "git": true,
   "install": true,
   "intent": true,
@@ -13,9 +13,5 @@
   "routerOnly": false,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "tanstack-query",
-    "shadcn",
-    "sentry"
-  ]
+  "chosenAddOns": ["tanstack-query", "shadcn", "sentry"]
 }

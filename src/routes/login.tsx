@@ -1,16 +1,22 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useForm } from 'react-hook-form';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
-import { GraduationCap, Loader2, ArrowLeft } from 'lucide-react';
-import { loginSchema } from '../features/auth/types';
-import type { LoginCredentials } from '../features/auth/types';
-import { useLogin } from '../features/auth/api/login';
-import { Button } from '../components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import { Link } from '@tanstack/react-router';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, GraduationCap, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { Button } from "../components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../components/ui/form";
+import { Input } from "../components/ui/input";
+import { useLogin } from "../features/auth/api/login";
+import type { LoginCredentials } from "../features/auth/types";
+import { loginSchema } from "../features/auth/types";
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
@@ -19,16 +25,16 @@ function LoginPage() {
   const loginMutation = useLogin();
 
   const form = useForm<LoginCredentials>({
-    resolver: standardSchemaResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = (data: LoginCredentials) => {
     loginMutation.mutate(data, {
       onSuccess: (res) => {
-        if (res.user.role === 'ADMIN') navigate({ to: '/admin' });
-        else if (res.user.role === 'CENTER') navigate({ to: '/center' });
-        else navigate({ to: '/' });
+        if (res.user.role === "ADMIN") navigate({ to: "/admin" });
+        else if (res.user.role === "CENTER") navigate({ to: "/center" });
+        else navigate({ to: "/" });
       },
     });
   };
@@ -45,21 +51,27 @@ function LoginPage() {
           <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 shadow-2xl backdrop-blur-sm">
             <GraduationCap className="h-10 w-10 text-white" />
           </div>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-white">CCMS</h1>
+          <h1 className="mb-4 text-4xl font-bold tracking-tight text-white">
+            CCMS
+          </h1>
           <p className="mb-2 text-xl font-medium text-emerald-100">
             Computer Course Management System
           </p>
           <p className="mx-auto max-w-sm text-sm text-emerald-200/80">
-            A comprehensive platform for managing student enrollments, courses, examinations, and institute operations.
+            A comprehensive platform for managing student enrollments, courses,
+            examinations, and institute operations.
           </p>
 
           <div className="mt-12 grid grid-cols-3 gap-4">
             {[
-              { value: '1200+', label: 'Students' },
-              { value: '24', label: 'Courses' },
-              { value: '18', label: 'Centers' },
+              { value: "1200+", label: "Students" },
+              { value: "24", label: "Courses" },
+              { value: "18", label: "Centers" },
             ].map((stat) => (
-              <div key={stat.label} className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
+              <div
+                key={stat.label}
+                className="rounded-xl bg-white/10 p-4 backdrop-blur-sm"
+              >
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
                 <p className="text-xs text-emerald-200">{stat.label}</p>
               </div>
@@ -71,7 +83,12 @@ function LoginPage() {
       {/* Right Panel - Login Form */}
       <div className="flex w-full flex-col items-center justify-center bg-background px-6 py-12 lg:w-1/2 lg:px-12">
         <div className="w-full max-w-sm">
-          <Button asChild variant="ghost" size="sm" className="mb-8 gap-2 text-muted-foreground">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="mb-8 gap-2 text-muted-foreground"
+          >
             <Link to="/">
               <ArrowLeft className="h-4 w-4" />
               Back to Home
@@ -130,7 +147,8 @@ function LoginPage() {
 
               {loginMutation.error && (
                 <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-                  {loginMutation.error.message || 'Invalid credentials. Please try again.'}
+                  {loginMutation.error.message ||
+                    "Invalid credentials. Please try again."}
                 </div>
               )}
 
@@ -139,14 +157,17 @@ function LoginPage() {
                 className="h-11 w-full gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20 hover:from-emerald-600 hover:to-teal-700"
                 disabled={loginMutation.isPending}
               >
-                {loginMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
+                {loginMutation.isPending && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
+                {loginMutation.isPending ? "Signing in..." : "Sign in"}
               </Button>
             </form>
           </Form>
 
           <p className="mt-8 text-center text-xs text-muted-foreground">
-            Secured with role-based access control. Contact your administrator for credentials.
+            Secured with role-based access control. Contact your administrator
+            for credentials.
           </p>
         </div>
       </div>

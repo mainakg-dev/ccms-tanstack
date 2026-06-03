@@ -1,24 +1,8 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-import DashboardSidebar from '../../components/DashboardSidebar';
+import DashboardSidebar from "#/components/DashboardSidebar";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/center')({
-  beforeLoad: () => {
-    if (typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem('auth-storage');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (parsed.state?.user?.role !== 'CENTER') {
-            throw redirect({ to: '/login' });
-          }
-        } catch {
-          throw redirect({ to: '/login' });
-        }
-      } else {
-        throw redirect({ to: '/login' });
-      }
-    }
-  },
+export const Route = createFileRoute("/center")({
+  beforeLoad: () => {},
   component: CenterLayout,
 });
 
